@@ -1,5 +1,11 @@
 package com.study.endpoint;
 
-public class BotEndpoint {
+import javax.websocket.server.ServerEndpoint;
 
+@ServerEndpoint(
+		value = "/websocketbot",
+		decoders = {}
+		)
+public class BotEndpoint {
+	
 }
