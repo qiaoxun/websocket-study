@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style>
+        .myButton {
+            -moz-box-shadow:inset 0px 1px 0px 0px #caefab;
+            -webkit-box-shadow:inset 0px 1px 0px 0px #caefab;
+            box-shadow:inset 0px 1px 0px 0px #caefab;
+            background:-webkit-linear-gradient(top, #77d42a 5%, #5cb811 100%);
+            border-radius:6px;
+            border:1px solid #268a16;
+            display:inline-block;
+            cursor:pointer;
+            color:#306108;
+            font-family:Arial;
+            font-size:15px;
+            font-weight:bold;
+            padding:6px 24px;
+            text-decoration:none;
+            text-shadow:0px 1px 0px #aade7c;
+        }
+    </style>
+</head>
+<body>
+
+<div id="chatDiv" style="display: none;">
+    <div id="messageDiv" style="background-color: #f9f9f9; height: 300px; width: 800px; margin: 10px 0px; overflow: scroll; "></div>
+    <input id="msg" style="width: 200px; margin-right: 10px;"/>
+    <a href="javascript:send();" class="myButton">Send</a>
+    <select id="members" style="width: 80px;">
+        <option>all</option>
+    </select>
+</div>
+
+<div id="connectDiv">
+    UserName : <input id="nickName" style="width: 150px">
+    <a class="myButton" href="javascript:connect();">Connect</a>
+
+</div>
+
+</body>
+<script type="text/javascript">
+    var wsocket;
+    var myName;
+
+    // Connect to websocket server
+    function connect() {
+        // get nick name
+        myName = document.getElementById("nickName").value;
+        if (!myName) {
+            alert("Please input your UserName!");
+            return;
+        }
+
+        // connect to websocket server
+        connectToServer();
+
+        // hide connect div
+        var connectDiv = document.getElementById("connectDiv");
+        connectDiv.style.display = 'none';
+
+        // show chat div
+        var chatDiv = document.getElementById("chatDiv");
+        chatDiv.style.display = 'block';
+
+		setTimeout(sendJoin, 500);
+    }
+
+    // once connect to server
+    function sendJoin() {
+        var sendMsg = {
+            "type" : "join",
+            "name" : myName
+        };
+		console.info(wsocket)
+        wsocket.send(JSON.stringify(sendMsg));
+    }
+
+    // send message
+    function send() {
+        var message = document.getElementById("msg").value;
+        var target = getSelectedText();
+        var sendMsg = {
+            "type" : "chat",
+            "name" : myName,
+            "message" : message,
+            "target" : target
+        };
+
+	   wsocket.send(JSON.stringify(sendMsg));
+    }
+
+    // connect to websocket server
+    function connectToServer() {
+        wsocket = new WebSocket("ws://localhost:8081/websocket-normal/websocketbot");
+        wsocket.onmessage = onMessage;
+		console.info(wsocket);
+    }
+
+    // when message comes
+    function onMessage(evt) {
+		var msg = evt.data;
+		console.info(msg);
+        var jsonMsg = eval("(" + msg + ")");
+        var type = jsonMsg.type;
+        if (type) {
+            if (type == 'chat') {
+                chatMessage(jsonMsg);
+            } else if (type == 'join') {
+                joinMessage(jsonMsg);
+            } else if (type == 'user') {
+                userMessage(jsonMsg);
+            }
+        }
+    }
+
+    // deal with user message
+    function userMessage(jsonMsg) {
+		console.info(jsonMsg)
+        var option = jsonMsg.option;
+        var name = jsonMsg.name;
+        // add a user
+        if (option == 'ADD') {
+            // I'm the new guy, add all users to the user list
+            if (myName == name) {
+                var allUserNames = jsonMsg.allUserNames;
+                if (!allUserNames)
+                    return;
+
+                var userNames = allUserNames.split(',');
+                for (var i = 0; i < userNames.length; i++) {
+                    var userName = userNames[i];
+                    addSelectOption(userName);
+                }
+            } else {
+                // add the new guy to the user list
+                addSelectOption(name);
+            }
+        } else {
+            // delete a user
+            removeSelectOption(name);
+        }
+    }
+
+    // deal with chat message
+    function chatMessage(jsonMsg) {
+        var name = jsonMsg.name;
+        var msg = jsonMsg.message;
+        var messageDiv = document.getElementById("messageDiv");
+        if (name == myName) {
+            name = "ME";
+        }
+
+		var pNode = document.createElement("p");
+		var textnode = document.createTextNode(name + ' : ' + msg);
+		pNode.appendChild(textnode);
+        messageDiv.appendChild(pNode)
+    }
+
+    // deal with join message
+    function joinMessage(jsonMsg) {
+        var name = jsonMsg.name;
+        var messageDiv = document.getElementById("messageDiv");
+
+		var pNode = document.createElement("p");
+		var textNode = document.createTextNode('Welcome ' + name);
+		pNode.appendChild(textNode);
+
+        messageDiv.appendChild(pNode)
+    }
+
+    // get selected text
+    function getSelectedText() {
+        var elt = document.getElementById("members");
+        if (elt.selectedIndex == -1)
+            return null;
+        return elt.options[elt.selectedIndex].text;
+    }
+
+    // when a user leaves, remove them from select element.
+    function removeSelectOption(name) {
+        var selectObject = document.getElementById("members");
+        for (var i=0; i<selectObject.length; i++){
+            if (selectObject.options[i].value == name )
+                selectObject.remove(i);
+        }
+    }
+
+    // when a new user joins us, add them to the select element.
+    function addSelectOption(name) {
+        var selectObject = document.getElementById("members");
+
+		var optionNode = document.createElement("option");
+		var textNode = document.createTextNode(name);
+		optionNode.appendChild(textNode);
+
+        selectObject.appendChild(optionNode);
+    }
+
+</script>
+</html>
