@@ -74,7 +74,6 @@
             "type" : "join",
             "name" : myName
         };
-		console.info(wsocket)
         wsocket.send(JSON.stringify(sendMsg));
     }
 
@@ -118,7 +117,6 @@
 
     // deal with user message
     function userMessage(jsonMsg) {
-		console.info(jsonMsg)
         var option = jsonMsg.option;
         var name = jsonMsg.name;
         // add a user
@@ -132,6 +130,9 @@
                 var userNames = allUserNames.split(',');
                 for (var i = 0; i < userNames.length; i++) {
                     var userName = userNames[i];
+                    if (!userName) {
+                    	continue;
+                    }
                     addSelectOption(userName);
                 }
             } else {
@@ -148,13 +149,22 @@
     function chatMessage(jsonMsg) {
         var name = jsonMsg.name;
         var msg = jsonMsg.message;
+        var target = jsonMsg.target;
+        
+        var chatMsg = name + ' : ' + msg;
+        
         var messageDiv = document.getElementById("messageDiv");
         if (name == myName) {
             name = "ME";
+            chatMsg = name + ' : ' + msg;
+            
+            if (target) {
+            	chatMsg = name + ' : ' + '@' + target + ' ' + msg + ' (private chat)';
+            }
         }
 
 		var pNode = document.createElement("p");
-		var textnode = document.createTextNode(name + ' : ' + msg);
+		var textnode = document.createTextNode(chatMsg);
 		pNode.appendChild(textnode);
         messageDiv.appendChild(pNode)
     }

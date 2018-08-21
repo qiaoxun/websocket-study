@@ -1,6 +1,5 @@
 package com.study.endpoint;
 
-import com.study.bean.BotBean;
 import com.study.decoder.MessageDecoder;
 import com.study.encoder.MessageEncoder;
 import com.study.message.ChatMessage;
@@ -10,7 +9,6 @@ import com.study.message.UserMessage;
 import com.study.utils.UserOptions;
 import org.apache.commons.lang3.StringUtils;
 
-import javax.enterprise.concurrent.ManagedExecutorService;
 import javax.websocket.*;
 import javax.websocket.server.ServerEndpoint;
 import java.util.Map;
@@ -28,13 +26,8 @@ public class BotEndpoint {
 	private static Queue<Session> queue = new ConcurrentLinkedQueue<>();
 
 	// a map that contains all users' name
+	// got be static, because every new connection will create a new instance
 	private static Map<String, String> idNameMap = new ConcurrentHashMap<>();
-
-	// Bot functionality bean
-	private BotBean botBean;
-
-	// Executor Service for asynchronous processing
-	private ManagedExecutorService mes;
 
 	/**
 	 *  on open connection
@@ -66,7 +59,7 @@ public class BotEndpoint {
 						id.append(k);
 					}
 				});
-				sendOnlyOneById(id.toString(), message);
+				sendMeAndTarget(session, id.toString(), message);
 			} else {
 				// send message to all users
 				sendAll(message);
@@ -174,5 +167,17 @@ public class BotEndpoint {
 				e.printStackTrace();
 			}
 		}
+	}
+	
+	/**
+	 * private chat
+	 * 
+	 * @param me
+	 * @param targetId
+	 * @param message
+	 */
+	private void sendMeAndTarget(Session me, String targetId, Message message) {
+		sendOnlyMe(me, message);
+		sendOnlyOneById(targetId, message);
 	}
 }
