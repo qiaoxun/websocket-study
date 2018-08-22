@@ -8,8 +8,8 @@
 - Put websocket-normal.war into Tomcat and run Tomcat
 
 ## How to access
-- http://localhost:8080/websocket-normal
-- http://localhost:8080/websocket-normal/chat.html
+- http://localhost:8081/websocket-normal
+- http://localhost:8081/websocket-normal/chat.html
 
 ## Please refer to 
 - https://docs.oracle.com/javaee/7/tutorial/websocket011.htm
