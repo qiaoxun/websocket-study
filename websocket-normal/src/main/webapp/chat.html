@@ -89,6 +89,7 @@
         };
 
 	   wsocket.send(JSON.stringify(sendMsg));
+	   document.getElementById("msg").value = '';
     }
 
     // connect to websocket server
@@ -107,8 +108,6 @@
         if (type) {
             if (type == 'chat') {
                 chatMessage(jsonMsg);
-            } else if (type == 'join') {
-                joinMessage(jsonMsg);
             } else if (type == 'user') {
                 userMessage(jsonMsg);
             }
@@ -117,6 +116,7 @@
 
     // deal with user message
     function userMessage(jsonMsg) {
+    	console.info(jsonMsg)
         var option = jsonMsg.option;
         var name = jsonMsg.name;
         // add a user
@@ -139,10 +139,22 @@
                 // add the new guy to the user list
                 addSelectOption(name);
             }
+            newGuyJoinUs(name)
         } else {
             // delete a user
             removeSelectOption(name);
         }
+    }
+
+    // new Guy Join Us
+    function newGuyJoinUs(name) {
+        var messageDiv = document.getElementById("messageDiv");
+
+		var pNode = document.createElement("p");
+		var textNode = document.createTextNode('Welcome ' + name + '!');
+		pNode.appendChild(textNode);
+
+        messageDiv.appendChild(pNode)
     }
 
     // deal with chat message
@@ -158,7 +170,7 @@
             name = "ME";
             chatMsg = name + ' : ' + msg;
             
-            if (target) {
+            if (target && target != 'all') {
             	chatMsg = name + ' : ' + '@' + target + ' ' + msg + ' (private chat)';
             }
         }
@@ -166,18 +178,6 @@
 		var pNode = document.createElement("p");
 		var textnode = document.createTextNode(chatMsg);
 		pNode.appendChild(textnode);
-        messageDiv.appendChild(pNode)
-    }
-
-    // deal with join message
-    function joinMessage(jsonMsg) {
-        var name = jsonMsg.name;
-        var messageDiv = document.getElementById("messageDiv");
-
-		var pNode = document.createElement("p");
-		var textNode = document.createTextNode('Welcome ' + name);
-		pNode.appendChild(textNode);
-
         messageDiv.appendChild(pNode)
     }
 

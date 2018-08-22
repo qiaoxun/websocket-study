@@ -38,6 +38,7 @@ public class UserMessage implements Message {
     public void setOption(String option) {
         switch (option) {
             case "DELETE" : this.option = UserOptions.DELETE;
+            break;
             case "ADD" : this.option = UserOptions.ADD;
         }
     }

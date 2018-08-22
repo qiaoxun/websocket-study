@@ -90,7 +90,8 @@ public class BotEndpoint {
 	@OnError
 	public void error(Session session, Throwable error) {
 		queue.remove(session);
-		Message message = new UserMessage(idNameMap.get(session.getId()), UserOptions.DELETE.getOption());
+		idNameMap.remove(session.getId());
+		Message message = new UserMessage(idNameMap.get(session.getId()), "DELETE");
 		sendAll(message);
 		error.printStackTrace();
 	}
@@ -102,7 +103,8 @@ public class BotEndpoint {
 	public void closeConnection(Session session, CloseReason closeReason) {
 		System.out.println(session.getId() + " closeConnection " + closeReason.getReasonPhrase());
 		queue.remove(session);
-		Message message = new UserMessage(idNameMap.get(session.getId()), UserOptions.DELETE.getOption());
+		UserMessage message = new UserMessage(idNameMap.get(session.getId()), "DELETE");
+		idNameMap.remove(session.getId());
 		sendAll(message);
 	}
 
