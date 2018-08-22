@@ -139,22 +139,14 @@
                 // add the new guy to the user list
                 addSelectOption(name);
             }
-            newGuyJoinUs(name)
+			var welcomeMsg = 'Welcome ' + name + '!';
+            appendPTagToDiv('messageDiv', welcomeMsg);
         } else {
             // delete a user
             removeSelectOption(name);
+			var leaveMsg = name + ' just left the chat room!'
+			appendPTagToDiv('messageDiv', leaveMsg);
         }
-    }
-
-    // new Guy Join Us
-    function newGuyJoinUs(name) {
-        var messageDiv = document.getElementById("messageDiv");
-
-		var pNode = document.createElement("p");
-		var textNode = document.createTextNode('Welcome ' + name + '!');
-		pNode.appendChild(textNode);
-
-        messageDiv.appendChild(pNode)
     }
 
     // deal with chat message
@@ -165,7 +157,6 @@
         
         var chatMsg = name + ' : ' + msg;
         
-        var messageDiv = document.getElementById("messageDiv");
         if (name == myName) {
             name = "ME";
             chatMsg = name + ' : ' + msg;
@@ -175,11 +166,17 @@
             }
         }
 
-		var pNode = document.createElement("p");
-		var textnode = document.createTextNode(chatMsg);
-		pNode.appendChild(textnode);
-        messageDiv.appendChild(pNode)
+		appendPTagToDiv('messageDiv', chatMsg);
     }
+	
+		
+	function appendPTagToDiv(divId, text) {
+		var div = document.getElementById(divId);
+		var pNode = document.createElement("p");
+		var textNode = document.createTextNode(text);
+		pNode.appendChild(textNode);
+		div.appendChild(pNode);
+	}
 
     // get selected text
     function getSelectedText() {
