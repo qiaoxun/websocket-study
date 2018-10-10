@@ -5,9 +5,11 @@ import java.util.Date;
 
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
+import org.springframework.stereotype.Controller;
 
 import com.study.message.Message;
 
+@Controller
 public class MessageController {
 	private static SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
 	
