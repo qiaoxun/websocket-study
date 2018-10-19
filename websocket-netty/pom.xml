@@ -7,13 +7,10 @@
     <artifactId>websocket-study</artifactId>
     <version>1.0</version>
   </parent>
-  <artifactId>websocket-springboot</artifactId>
-  <name>websocket-springboot</name>
+  <artifactId>websocket-netty</artifactId>
+  <packaging>war</packaging>
+  <name>websocket-netty Maven Webapp</name>
   <url>http://maven.apache.org</url>
-  <properties>
-    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-  </properties>
-  
   <dependencies>
     <dependency>
         <groupId>org.springframework.boot</groupId>
@@ -44,6 +41,12 @@
         <artifactId>jquery</artifactId>
         <version>3.1.0</version>
     </dependency>
+    
+    <!-- https://mvnrepository.com/artifact/io.netty/netty-all -->
+	<dependency>
+	    <groupId>io.netty</groupId>
+	    <artifactId>netty-all</artifactId>
+	</dependency>
 
     <dependency>
         <groupId>org.springframework.boot</groupId>
@@ -51,13 +54,13 @@
         <scope>test</scope>
     </dependency>
   </dependencies>
-  
-   <build>
-        <plugins>
-            <plugin>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-maven-plugin</artifactId>
-            </plugin>
-        </plugins>
-    </build>
+  <build>
+  <plugins>
+    <plugin>
+         <groupId>org.springframework.boot</groupId>
+         <artifactId>spring-boot-maven-plugin</artifactId>
+     </plugin>
+    </plugins>
+    <finalName>websocket-netty</finalName>
+  </build>
 </project>
